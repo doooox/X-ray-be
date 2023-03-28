@@ -1,9 +1,6 @@
 import express from "express"
+import { authRouter } from "./Auth/authRoutes";
 
 export const router = express.Router();
 
-router.get("/", (req, res) => {
-  res.json({
-    message: "connected"
-  })
-})
+router.use("/auth", authRouter)

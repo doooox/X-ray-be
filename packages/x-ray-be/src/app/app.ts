@@ -1,13 +1,20 @@
+import cors from 'cors'
 import express from 'express'
 import { router } from '../routers/routes'
 import { connectDB } from '../services/db'
+import { corsOptions } from '../utils/static'
 
 export const createApp = () => {
-
-  const app = express()
   connectDB()
 
+  const app = express();
 
-  app.use("/api", router);
-  return app
+  app.use(cors(corsOptions))
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
+  app.set('trust proxy', 1);
+
+  app.use('/api', router);
+
+  return app;
 }
