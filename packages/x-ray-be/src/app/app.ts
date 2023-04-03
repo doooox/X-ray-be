@@ -2,7 +2,7 @@ import cors from 'cors'
 import express from 'express'
 import { router } from '../routers/routes'
 import { connectDB } from '../services/db'
-import { corsOptions } from '../utils/static'
+import { corsOptions, filePath } from '../utils/static'
 
 export const createApp = () => {
   connectDB()
@@ -10,11 +10,12 @@ export const createApp = () => {
   const app = express();
 
   app.use(cors(corsOptions))
+  app.use('/xrays', express.static(filePath));
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   app.set('trust proxy', 1);
-
   app.use('/api', router);
 
   return app;
 }
+

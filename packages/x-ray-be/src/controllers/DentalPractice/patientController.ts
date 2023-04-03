@@ -9,7 +9,13 @@ export const getPatietnt = async (req: Request, res: Response) => {
 
     if (!_id) return errorMessage(400, res, "Id is required")
 
-    const getSinglePatient = await Patient.findById({ _id }).populate('doctor').populate('dentalPractice')
+    const getSinglePatient = await Patient.findById({ _id })
+        .populate('doctor')
+        .populate('dentalPractice')
+        .populate({
+            path: "xRays",
+            options: { sort: { createdAt: -1 } }
+        })
 
     if (getSinglePatient) return res.status(200).json(getSinglePatient);
     errorMessage(400, res, "No Patient found")

@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import { IPatient } from "../../types/DentapPractice/patient.types";
-import dentalPractice from "./dentalPractice";
 
 const Schema = mongoose.Schema;
 
@@ -20,7 +19,11 @@ const patientSchema = new Schema<IPatient>({
     doctor: {
         type: Schema.Types.ObjectId,
         ref: "Doctor"
-    }
+    },
+    xRays: [{
+        type: Schema.Types.ObjectId,
+        ref: "xRayImage"
+    }]
 },
     {
         timestamps: true,
