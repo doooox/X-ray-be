@@ -3,6 +3,14 @@ import DentalPractice from "../../models/DentalPractice/dentalPractice";
 import Doctor from "../../models/DentalPractice/doctor";
 import { errorMessage } from "../../utils/helpers";
 
+export const getAllDoctors = async (req: Request, res: Response) => {
+    const doctors = await Doctor.find({})
+
+    if (!doctors) return errorMessage(400, res, "No doctors found!")
+
+    res.status(200).json(doctors)
+}
+
 export const getDoctor = async (req: Request, res: Response) => {
     const { _id } = req.params
 
@@ -37,4 +45,17 @@ export const addDoctor = async (req: Request, res: Response) => {
     await dentalPractice.save()
 
     if (newDoctor) return res.status(200).json(newDoctor);
+
+}
+export const getSearchedDoctor = async (req: Request, res: Response) => {
+    const { search } = req.query
+
+    const seachedDoctrod = await Doctor.find({
+        $or: [
+            { firstName: { $regex: search, $options: "i" } },
+            { lastName: { $regex: search, $options: "i" } },
+        ]
+    }).select("_id firstName lastName")
+
+    res.status(200).json(seachedDoctrod)
 }

@@ -3,9 +3,12 @@ import DentalPractice from "../../models/DentalPractice/dentalPractice"
 import { errorMessage } from "../../utils/helpers"
 
 export const getAllDentalPractices = async (req: Request, res: Response) => {
-    const dentalPractices = await DentalPractice.find({})
-    if (dentalPractices) return res.status(200).json(dentalPractices)
-    errorMessage(400, res, "No dental practices found")
+
+    const dentalPractice = await DentalPractice.find({})
+
+    if (!dentalPractice) return errorMessage(400, res, "No dental practices found")
+
+    res.status(200).json(dentalPractice)
 }
 
 export const getSingleDentalPractice = async (req: Request, res: Response) => {
@@ -31,3 +34,21 @@ export const addDentalPractice = async (req: Request, res: Response) => {
     if (newDentalPractice) return res.status(200).json(newDentalPractice)
     errorMessage(400, res, "Invalid data")
 }
+
+export const getSearchedDentalPractices = async (req: Request, res: Response) => {
+    const { search } = req.query;
+
+    const searchedDentalPractices = await DentalPractice.find({
+        $or: [
+            { name: { $regex: search, $options: "i" } },
+            { address: { $regex: search, $options: "i" } },
+        ],
+    }).select("_id name address");
+
+    if (!searchedDentalPractices || searchedDentalPractices.length === 0) {
+        return errorMessage(404, res, "No dental practice found!");
+    }
+
+    return res.status(200).json(searchedDentalPractices);
+};
+

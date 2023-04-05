@@ -4,6 +4,15 @@ import Doctor from "../../models/DentalPractice/doctor";
 import Patient from "../../models/DentalPractice/patient";
 import { errorMessage } from "../../utils/helpers";
 
+
+export const getAllPatients = async (req: Request, res: Response) => {
+    const patients = await Patient.find({})
+
+    if (!patients) return errorMessage(400, res, "No patients found!")
+
+    res.status(200).json(patients)
+}
+
 export const getPatietnt = async (req: Request, res: Response) => {
     const { _id } = req.params
 
@@ -14,7 +23,7 @@ export const getPatietnt = async (req: Request, res: Response) => {
         .populate('dentalPractice')
         .populate({
             path: "xRays",
-            options: { sort: { createdAt: -1 } }
+            options: { sort: { createdAt: "desc" } }
         })
 
     if (getSinglePatient) return res.status(200).json(getSinglePatient);
@@ -51,3 +60,17 @@ export const addPatient = async (req: Request, res: Response) => {
 
     if (newPatient) return res.status(201).json(newPatient)
 }
+
+export const getSerchedPatient = async (req: Request, res: Response) => {
+    const { search } = req.query
+
+    const seachedPatient = await Patient.find({
+        $or: [
+            { firstName: { $regex: search, $options: "i" } },
+            { lastName: { $regex: search, $options: "i" } },
+        ]
+    }).select("_id firstName lastName")
+
+    res.status(200).json(seachedPatient)
+}
+
